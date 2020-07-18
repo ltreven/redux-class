@@ -2,16 +2,63 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
-import * as serviceWorker from './serviceWorker';
+import { Provider } from 'react-redux'
+import { createStore, combineReducers } from 'redux';
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
+const carritoHandler = (carritoActual = [], action) => {
+  if (action.type === "ADD_ITEM") {
+    let nuevoArray = JSON.parse(JSON.stringify(carritoActual));
+    nuevoArray.push(action.payload);
+    return nuevoArray;
+  } else if (action.type === "REMOVE_ITEM") {
+    return carritoActual.filter( elem => elem.id !== action.payload.id );
+  }
+  return carritoActual;
+}
+
+const stockInicial = [
+  {
+    id: 1,
+    name: "Platan",
+    price: 2
+  },
+  {
+    id: 2,
+    name: "Manzana",
+    price: 3
+  },
+  {
+    id: 3,
+    name: "Kiwi",
+    price: 10
+  }
+];
+
+const stockHandler = (stockActual = stockInicial, action) => {
+  if (action.type === "ADD_ITEM") {
+    // remover este item del stock
+    return stockActual.filter( elem => elem.id !== action.payload.id);
+    
+  } else if (action.type === "REMOVE_ITEM") {
+    // agregar el item de vuelta al stock
+    return [...stockActual, action.payload];
+    
+  }
+  return stockActual;
+}
+
+const todosLosReducerJuntos = combineReducers({
+  carrito: carritoHandler,
+  stock: stockHandler
+});
+
+const store = createStore(todosLosReducerJuntos, 
+  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
 );
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+ReactDOM.render(
+  <Provider store={store}>
+    <App />
+  </Provider>,
+  document.getElementById('root')
+);
