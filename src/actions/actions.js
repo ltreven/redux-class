@@ -1,3 +1,6 @@
+
+// Action Creator
+
 export const addItem = item => {
     return {
       type: "ADD_ITEM",
@@ -5,4 +8,14 @@ export const addItem = item => {
         ...item
       }
     }
+}
+
+
+export const loadItems = item => {
+  return {
+    type: "LOAD_ITEMS",
+    payload: {
+      
+    }
+  }
 }
